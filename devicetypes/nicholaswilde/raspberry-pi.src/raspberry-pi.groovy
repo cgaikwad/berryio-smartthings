@@ -93,7 +93,26 @@ def parse(String description) {
     }
     
     log.debug "check temp..."
- 	if (result.containsKey("gpio_value_17")) {
+    if (result.containsKey("cpu_temp")) {
+    	log.debug "temp: ${result.cpu_temp.toDouble().round()}"
+        log.debug "temp: ${celsiusToFahrenheit(result.cpu_temp.toDouble().round())} F"
+    	sendEvent(name: "temperature", value: celsiusToFahrenheit(result.cpu_temp.toDouble().round()))
+    }
+    
+    if (result.containsKey("cpu_perc")) {
+    	log.debug "cpu_perc: ${result.cpu_perc}"
+        sendEvent(name: "cpuPercentage", value: result.cpu_perc)
+    }
+    
+    if (result.containsKey("mem_avail")) {
+    	log.debug "mem_avail: ${result.mem_avail.toDouble().round()}"
+        sendEvent(name: "memory", value: result.mem_avail.toDouble().round())
+    }
+    if (result.containsKey("disk_usage")) {
+    	log.debug "disk_usage: ${result.disk_usage.toDouble().round()}"
+        sendEvent(name: "diskUsage", value: result.disk_usage.toDouble().round())
+    }
+  	iif (result.containsKey("gpio_value_17")) {
     	log.debug "gpio_value_17: ${result.gpio_value_17.toDouble().round()}"
         if (result.gpio_value_17.contains("0")){
         	log.debug "gpio_value_17: open"
