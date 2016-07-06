@@ -44,10 +44,6 @@ metadata {
         capability "Actuator"
         capability "Contact Sensor"
         
-        attribute "cpuPercentage", "string"
-        attribute "memory", "string"
-        attribute "diskUsage", "string"
-        
         command "restart"
 	}
 
@@ -56,58 +52,10 @@ metadata {
 	}
 
 	tiles {
-		valueTile("temperature", "device.temperature", width: 1, height: 1) {
-            state "temperature", label:'${currentValue}° CPU', unit: "F",
-            backgroundColors:[
-                [value: 25, color: "#153591"],
-                [value: 35, color: "#1e9cbb"],
-                [value: 47, color: "#90d2a7"],
-                [value: 59, color: "#44b621"],
-                [value: 67, color: "#f1d801"],
-                [value: 76, color: "#d04e00"],
-                [value: 77, color: "#bc2323"]
-            ]
-        }
-        standardTile("button", "device.switch", width: 1, height: 1, canChangeIcon: true) {
+		standardTile("button", "device.switch", width: 1, height: 1, canChangeIcon: true) {
 			state "off", label: 'Off', icon: "st.Electronics.electronics18", backgroundColor: "#ffffff", nextState: "on"
 			state "on", label: 'On', icon: "st.Electronics.electronics18", backgroundColor: "#79b821", nextState: "off"
 		}
-        valueTile("cpuPercentage", "device.cpuPercentage", inactiveLabel: false) {
-        	state "default", label:'${currentValue}% CPU', unit:"Percentage",
-            backgroundColors:[
-                [value: 31, color: "#153591"],
-                [value: 44, color: "#1e9cbb"],
-                [value: 59, color: "#90d2a7"],
-                [value: 74, color: "#44b621"],
-                [value: 84, color: "#f1d801"],
-                [value: 95, color: "#d04e00"],
-                [value: 96, color: "#bc2323"]
-            ]
-        }
-        valueTile("memory", "device.memory", width: 1, height: 1) {
-        	state "default", label:'${currentValue} MB', unit:"MB",
-            backgroundColors:[
-                [value: 353, color: "#153591"],
-                [value: 287, color: "#1e9cbb"],
-                [value: 210, color: "#90d2a7"],
-                [value: 133, color: "#44b621"],
-                [value: 82, color: "#f1d801"],
-                [value: 26, color: "#d04e00"],
-                [value: 20, color: "#bc2323"]
-            ]
-        }
-        valueTile("diskUsage", "device.diskUsage", width: 1, height: 1) {
-        	state "default", label:'${currentValue}% Disk', unit:"Percent",
-            backgroundColors:[
-                [value: 31, color: "#153591"],
-                [value: 44, color: "#1e9cbb"],
-                [value: 59, color: "#90d2a7"],
-                [value: 74, color: "#44b621"],
-                [value: 84, color: "#f1d801"],
-                [value: 95, color: "#d04e00"],
-                [value: 96, color: "#bc2323"]
-            ]
-        }
         standardTile("contact", "device.contact", width: 1, height: 1) {
 			state("closed", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#79b821", action: "open")
 			state("open", label:'${name}', icon:"st.contact.contact.open", backgroundColor:"#ffa81e", action: "close")
@@ -145,26 +93,7 @@ def parse(String description) {
     }
     
     log.debug "check temp..."
-    if (result.containsKey("cpu_temp")) {
-    	log.debug "temp: ${result.cpu_temp.toDouble().round()}"
-        log.debug "temp: ${celsiusToFahrenheit(result.cpu_temp.toDouble().round())} F"
-    	sendEvent(name: "temperature", value: celsiusToFahrenheit(result.cpu_temp.toDouble().round()))
-    }
-    
-    if (result.containsKey("cpu_perc")) {
-    	log.debug "cpu_perc: ${result.cpu_perc}"
-        sendEvent(name: "cpuPercentage", value: result.cpu_perc)
-    }
-    
-    if (result.containsKey("mem_avail")) {
-    	log.debug "mem_avail: ${result.mem_avail.toDouble().round()}"
-        sendEvent(name: "memory", value: result.mem_avail.toDouble().round())
-    }
-    if (result.containsKey("disk_usage")) {
-    	log.debug "disk_usage: ${result.disk_usage.toDouble().round()}"
-        sendEvent(name: "diskUsage", value: result.disk_usage.toDouble().round())
-    }
-  	if (result.containsKey("gpio_value_17")) {
+ 	if (result.containsKey("gpio_value_17")) {
     	log.debug "gpio_value_17: ${result.gpio_value_17.toDouble().round()}"
         if (result.gpio_value_17.contains("0")){
         	log.debug "gpio_value_17: open"
